@@ -13,6 +13,7 @@ export function WalletProvider({ children }) {
   const [chainId, setChainId] = useState(null);
   const [provider, setProvider] = useState(null);
   const [signer, setSigner] = useState(null);
+  const [balance, setBalance] = useState("0.0");
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState(null);
 
@@ -30,8 +31,23 @@ export function WalletProvider({ children }) {
     setChainId(null);
     setSigner(null);
     setProvider(null);
+    setBalance("0.0");
     setError(null);
   }, []);
+
+  /**
+   * Refreshes the connected account's native ETH balance
+   */
+  const refreshBalance = useCallback(async () => {
+    if (provider && account) {
+      try {
+        const rawBalance = await provider.getBalance(account);
+        setBalance(parseFloat(ethers.formatEther(rawBalance)).toFixed(4));
+      } catch (err) {
+        console.warn("Failed to refresh balance:", err);
+      }
+    }
+  }, [provider, account]);
 
   /**
    * Initializes browser provider and queries chain info
@@ -48,10 +64,20 @@ export function WalletProvider({ children }) {
       const currentChainId = Number(network.chainId);
       const activeSigner = await browserProvider.getSigner();
 
+      // Fetch account balance
+      let formattedBalance = "0.0";
+      try {
+        const rawBalance = await browserProvider.getBalance(activeAccount);
+        formattedBalance = parseFloat(ethers.formatEther(rawBalance)).toFixed(4);
+      } catch (bErr) {
+        console.warn("Could not fetch balance:", bErr);
+      }
+
       setAccount(activeAccount);
       setChainId(currentChainId);
       setProvider(browserProvider);
       setSigner(activeSigner);
+      setBalance(formattedBalance);
       setError(null);
     } catch (err) {
       console.error("Error updating wallet state:", err);
@@ -199,6 +225,8 @@ export function WalletProvider({ children }) {
         currentChainConfig,
         provider,
         signer,
+        balance,
+        refreshBalance,
         isConnected,
         isConnecting,
         isSupported,

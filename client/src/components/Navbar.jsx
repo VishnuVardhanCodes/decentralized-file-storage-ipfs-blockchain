@@ -10,6 +10,8 @@ export default function NavigationBar() {
   const {
     account,
     chainName,
+    balance,
+    refreshBalance,
     isConnected,
     isConnecting,
     isSupported,
@@ -114,10 +116,12 @@ export default function NavigationBar() {
               <Dropdown align="end">
                 <Dropdown.Toggle
                   id="wallet-dropdown"
-                  className="btn-outline-web3 font-mono py-2 px-3"
+                  className="btn-outline-web3 font-mono py-2 px-3 d-flex align-items-center gap-2"
                   style={{ borderRadius: "12px", border: "1px solid rgba(59, 130, 246, 0.4)" }}
                 >
-                  <i className="bi bi-wallet2 text-primary" />
+                  <span className="badge bg-dark border border-secondary text-warning" style={{ fontSize: "0.75rem" }}>
+                    {balance} ETH
+                  </span>
                   <span>{truncateAddress(account)}</span>
                 </Dropdown.Toggle>
 
@@ -126,14 +130,18 @@ export default function NavigationBar() {
                   style={{
                     backgroundColor: "#0d121f",
                     border: "1px solid rgba(59, 130, 246, 0.3)",
-                    minWidth: "220px",
+                    minWidth: "240px",
                   }}
                 >
                   <div className="px-3 py-2 border-bottom border-secondary mb-2">
                     <small className="text-secondary d-block">Connected Wallet</small>
-                    <span className="font-mono text-white fw-bold d-block text-truncate">
+                    <span className="font-mono text-white fw-bold d-block text-truncate" style={{ fontSize: "0.85rem" }}>
                       {account}
                     </span>
+                    <div className="d-flex justify-content-between align-items-center mt-2 pt-1 border-top border-secondary border-opacity-25">
+                      <small className="text-secondary">Balance:</small>
+                      <span className="text-warning font-mono fw-bold small">{balance} ETH</span>
+                    </div>
                   </div>
 
                   <Dropdown.Item
@@ -149,6 +157,16 @@ export default function NavigationBar() {
                     className="text-light d-flex align-items-center gap-2 rounded py-2 px-3"
                   >
                     <i className="bi bi-speedometer2" /> View Dashboard
+                  </Dropdown.Item>
+
+                  <Dropdown.Item
+                    onClick={async () => {
+                      if (refreshBalance) await refreshBalance();
+                      showInfo("Balance updated.");
+                    }}
+                    className="text-light d-flex align-items-center gap-2 rounded py-2 px-3"
+                  >
+                    <i className="bi bi-arrow-repeat text-info" /> Refresh Balance
                   </Dropdown.Item>
 
                   <Dropdown.Divider className="border-secondary opacity-25" />

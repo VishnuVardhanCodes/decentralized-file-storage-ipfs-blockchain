@@ -10,7 +10,7 @@ import { formatBytes, formatDate, truncateAddress, copyToClipboard } from "../ut
 import { getExplorerTxUrl } from "../config/chains";
 
 export default function Upload() {
-  const { account, signer, isConnected, chainId, connectWallet } = useWallet();
+  const { account, signer, isConnected, isSupported, balance, refreshBalance, chainId, connectWallet } = useWallet();
   const { showSuccess, showError, showInfo } = useNotification();
   const navigate = useNavigate();
 
@@ -109,6 +109,20 @@ export default function Upload() {
       return;
     }
 
+    if (!isSupported) {
+      showError(
+        "Unsupported network detected. Please switch your MetaMask network to Hardhat Localhost (Chain ID 31337)."
+      );
+      return;
+    }
+
+    if (parseFloat(balance || "0") <= 0.0001) {
+      showError(
+        `Insufficient local test ETH (Current balance: ${balance} ETH). Please fund your wallet using the local funding script ('npm run fund') before sending transactions.`
+      );
+      return;
+    }
+
     if (!ipfsResult) {
       showError("Please upload the file to IPFS first.");
       return;
@@ -132,16 +146,30 @@ export default function Upload() {
 
       setUploadState("registered_success");
       setBlockchainResult(result);
+      if (refreshBalance) refreshBalance();
       showSuccess("File registered on blockchain successfully!");
     } catch (err) {
       console.error("Blockchain registration error:", err);
       setUploadState("ipfs_success"); // Revert back to ipfs_success so user can retry
 
       let userMsg = err.message || "Blockchain transaction failed.";
-      if (err.code === "ACTION_REJECTED" || err.info?.error?.code === 4001) {
-        userMsg = "Transaction was rejected in MetaMask.";
-      } else if (err.message && err.message.includes("user rejected")) {
-        userMsg = "Transaction signature was cancelled.";
+      const lower = userMsg.toLowerCase();
+
+      if (err.code === "ACTION_REJECTED" || err.info?.error?.code === 4001 || lower.includes("user rejected")) {
+        userMsg = "Transaction signature was rejected or cancelled in MetaMask.";
+      } else if (
+        err.code === "INSUFFICIENT_FUNDS" ||
+        lower.includes("insufficient funds") ||
+        lower.includes("gas required exceeds allowance")
+      ) {
+        userMsg =
+          "Insufficient test ETH to pay for transaction gas. Run the funding script ('npm run fund') to send test ETH to your wallet.";
+      } else if (lower.includes("nonce")) {
+        userMsg =
+          "MetaMask nonce mismatch. In MetaMask, go to Settings > Advanced > Clear activity tab data to reset transaction history.";
+      } else if (lower.includes("network") || lower.includes("wrong chain")) {
+        userMsg =
+          "Network mismatch. Ensure MetaMask is connected to Hardhat Localhost (RPC: http://127.0.0.1:8545, Chain ID: 31337).";
       }
       showError(userMsg);
     }
@@ -486,16 +514,33 @@ export default function Upload() {
             )}
 
             {uploadState === "ipfs_success" && (
-              <div className="d-flex justify-content-end gap-2">
-                <Button variant="outline-secondary" className="btn-outline-web3" onClick={resetUpload}>
-                  Reset
-                </Button>
-                <Button
-                  onClick={handleBlockchainRegistration}
-                  className="btn-gradient-primary"
-                >
-                  <i className="bi bi-cpu" /> Register on Blockchain
-                </Button>
+              <div>
+                {isConnected && parseFloat(balance || "0") <= 0.0001 && (
+                  <Alert variant="warning" className="small p-3 mb-3 d-flex align-items-start gap-2" style={{ background: "rgba(69, 26, 3, 0.7)", border: "1px solid rgba(245, 158, 11, 0.4)", color: "#fef3c7" }}>
+                    <i className="bi bi-wallet2 text-warning fs-5 mt-1" />
+                    <div>
+                      <strong>Insufficient Local Test ETH ({balance} ETH)</strong>
+                      <div className="opacity-90">
+                        To register this file on your local Hardhat blockchain, your MetaMask account needs test ETH for gas. Run the funding script in a terminal:
+                      </div>
+                      <code className="d-block mt-2 p-2 rounded text-light" style={{ background: "rgba(0,0,0,0.5)" }}>
+                        $env:RECIPIENT_ADDRESS="{account}"; npm run fund
+                      </code>
+                    </div>
+                  </Alert>
+                )}
+
+                <div className="d-flex justify-content-end gap-2">
+                  <Button variant="outline-secondary" className="btn-outline-web3" onClick={resetUpload}>
+                    Reset
+                  </Button>
+                  <Button
+                    onClick={handleBlockchainRegistration}
+                    className="btn-gradient-primary"
+                  >
+                    <i className="bi bi-cpu" /> Register on Blockchain
+                  </Button>
+                </div>
               </div>
             )}
           </div>
@@ -525,9 +570,15 @@ export default function Upload() {
 
           <div className="glass-panel p-4">
             <h6 className="text-white fw-bold mb-2">Connected Signer</h6>
-            <div className="small font-mono text-secondary mb-3">
+            <div className="small font-mono text-secondary mb-2 text-break">
               {isConnected ? account : "No wallet connected"}
             </div>
+            {isConnected && (
+              <div className="d-flex justify-content-between align-items-center mb-3 p-2 rounded small font-mono" style={{ background: "rgba(0,0,0,0.3)" }}>
+                <span className="text-secondary">Balance:</span>
+                <span className="text-warning fw-bold">{balance} ETH</span>
+              </div>
+            )}
             {!isConnected && (
               <Button size="sm" onClick={connectWallet} className="btn-gradient-primary w-100">
                 Connect MetaMask

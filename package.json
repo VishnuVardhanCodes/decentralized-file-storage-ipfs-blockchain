@@ -8,6 +8,7 @@
     "test:client": "cd client && npm test",
     "test:all": "npm run test:blockchain && npm run test:server && npm run test:client",
     "deploy:blockchain": "cd blockchain && npx hardhat run scripts/deploy.js --network localhost",
+    "fund": "cd blockchain && npm run fund",
     "start:server": "cd server && npm start",
     "start:client": "cd client && npm start"
   },

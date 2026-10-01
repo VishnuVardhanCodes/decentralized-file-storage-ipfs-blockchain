@@ -9,7 +9,7 @@ import { getMyFiles, getTotalFileCount } from "../services/blockchainService";
 import { formatBytes, formatDate, truncateAddress, truncateCid } from "../utils/formatters";
 
 export default function Dashboard() {
-  const { account, signer, isConnected, connectWallet } = useWallet();
+  const { account, signer, balance, isConnected, connectWallet } = useWallet();
   const { showError } = useNotification();
   const navigate = useNavigate();
 
@@ -124,9 +124,9 @@ export default function Dashboard() {
               <StatCard
                 title="Connected Wallet"
                 value={truncateAddress(account, 5, 4)}
-                icon="bi-shield-check"
-                badge="Authenticated"
-                subtitle="Current signer address"
+                icon="bi-wallet2"
+                badge={`${balance} ETH`}
+                subtitle="Signer balance on Hardhat"
                 accentColor="#06b6d4"
               />
             </Col>
