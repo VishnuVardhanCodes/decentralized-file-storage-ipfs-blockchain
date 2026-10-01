@@ -1,0 +1,26 @@
+{
+  "name": "defilechain",
+  "version": "1.0.0",
+  "description": "DeFileChain – Decentralized File Storage System Using IPFS and Blockchain",
+  "scripts": {
+    "test:blockchain": "cd blockchain && npx hardhat test",
+    "test:server": "cd server && npm test",
+    "test:client": "cd client && npm test",
+    "test:all": "npm run test:blockchain && npm run test:server && npm run test:client",
+    "deploy:blockchain": "cd blockchain && npx hardhat run scripts/deploy.js --network localhost",
+    "start:server": "cd server && npm start",
+    "start:client": "cd client && npm start"
+  },
+  "keywords": [
+    "defilechain",
+    "ipfs",
+    "blockchain",
+    "ethereum",
+    "solidity",
+    "hardhat",
+    "react",
+    "express"
+  ],
+  "author": "DeFileChain",
+  "license": "MIT"
+}

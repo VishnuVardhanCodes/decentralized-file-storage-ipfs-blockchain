@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing and coverage
+coverage/
+.nyc_output
+
+# Production builds
+build/
+dist/
+
+# Hardhat & Solc
+cache/
+artifacts/
+typechain/
+typechain-types/
+
+# Uploads & Temp files
+server/uploads/*
+!server/uploads/.gitkeep
+scratch/
+*.log
+
+# Environment variables & secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.pem
+*.key
+
+# Operating System files
+.DS_Store
+Thumbs.db
