@@ -1,0 +1,17 @@
+# Blockchain subsystem .gitignore
+.env
+.env.*
+*.env
+!.env.example
+*.key
+*.pem
+*.secret
+
+node_modules/
+cache/
+artifacts/
+typechain/
+typechain-types/
+coverage/
+.nyc_output
+*.log
