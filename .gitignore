@@ -1,37 +1,92 @@
-# Dependencies
-node_modules/
-.pnp
-.pnp.js
+# ==============================================================================
+# DeFileChain - Global Git Ignore (.gitignore)
+# ==============================================================================
 
-# Testing and coverage
-coverage/
-.nyc_output
-
-# Production builds
-build/
-dist/
-
-# Hardhat & Solc
-cache/
-artifacts/
-typechain/
-typechain-types/
-
-# Uploads & Temp files
-server/uploads/*
-!server/uploads/.gitkeep
-scratch/
-*.log
-
-# Environment variables & secrets
+# ------------------------------------------------------------------------------
+# 1. Environment Variables & Secrets (CRITICAL FOR SECURITY)
+# ------------------------------------------------------------------------------
+# Ignore all .env files anywhere in the workspace
 .env
+.env.*
+*.env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Explicitly protect subsystem environment files
+blockchain/.env
+server/.env
+client/.env
+
+# Always allow .env.example templates to be committed
+!.env.example
+!*.env.example
+!blockchain/.env.example
+!server/.env.example
+!client/.env.example
+
+# Secret keys, private keys, certificates, credentials
 *.pem
 *.key
+*.secret
+*.keystore
+*.pfx
+*.p12
+id_rsa
+id_ecdsa
+id_ed25519
 
-# Operating System files
+# ------------------------------------------------------------------------------
+# 2. Dependencies
+# ------------------------------------------------------------------------------
+node_modules/
+*/node_modules/
+.pnp
+.pnp.js
+
+# ------------------------------------------------------------------------------
+# 3. Testing, Coverage & Logs
+# ------------------------------------------------------------------------------
+coverage/
+*/coverage/
+.nyc_output
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ------------------------------------------------------------------------------
+# 4. Production & Transpiled Builds
+# ------------------------------------------------------------------------------
+build/
+client/build/
+dist/
+
+# ------------------------------------------------------------------------------
+# 5. Blockchain / Hardhat / Smart Contracts
+# ------------------------------------------------------------------------------
+cache/
+blockchain/cache/
+artifacts/
+blockchain/artifacts/
+typechain/
+typechain-types/
+
+# ------------------------------------------------------------------------------
+# 6. Uploaded Files & Temporary Directories
+# ------------------------------------------------------------------------------
+server/uploads/*
+!server/uploads/.gitkeep
+scratch/
+tmp/
+temp/
+
+# ------------------------------------------------------------------------------
+# 7. Operating System & IDE Files
+# ------------------------------------------------------------------------------
 .DS_Store
 Thumbs.db
+.vscode/
+.idea/
+*.swp

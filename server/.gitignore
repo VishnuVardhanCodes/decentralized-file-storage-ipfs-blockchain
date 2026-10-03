@@ -1,0 +1,16 @@
+# Server subsystem .gitignore
+.env
+.env.*
+*.env
+!.env.example
+*.key
+*.pem
+*.secret
+
+node_modules/
+uploads/*
+!uploads/.gitkeep
+coverage/
+.nyc_output
+*.log
+npm-debug.log*

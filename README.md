@@ -232,14 +232,35 @@ cd ..
 
 ## 9. Environment Configuration
 
-### Server Environment (`server/.env`)
+The application uses environment variables to configure the blockchain network, backend IPFS connection, and React frontend. A master consolidated template is located at `.env` / `.env.example` in the project root, and each subsystem has its own dedicated `.env` file:
 
+### 1. Root Master Environment (`.env`)
+Located in the project root: `DeFileChain/.env`. Provides a centralized reference for all components.
+
+### 2. Blockchain Environment (`blockchain/.env`)
+Create `blockchain/.env` based on `blockchain/.env.example`:
+
+```env
+# Personal MetaMask account address to receive 10.0 local test ETH via "npm run fund"
+RECIPIENT_ADDRESS=
+
+# Amount of local test ETH to transfer (Default: 10.0 ETH)
+AMOUNT_ETH=10.0
+
+# Optional: Ethereum Sepolia testnet RPC and deployment keys
+SEPOLIA_RPC_URL=https://rpc.sepolia.org
+PRIVATE_KEY=
+ETHERSCAN_API_KEY=
+```
+
+### 3. Server Environment (`server/.env`)
 Create `server/.env` based on `server/.env.example`:
 
 ```env
 PORT=5000
 CLIENT_URL=http://localhost:3000
 MAX_FILE_SIZE_BYTES=52428800
+ALLOWED_FILE_TYPES=image/jpeg,image/png,image/gif,image/webp,application/pdf,text/plain,text/csv,application/json,application/zip,application/x-zip-compressed
 IPFS_PROVIDER=auto
 
 # (Optional) Pinata Cloud Credentials
@@ -250,10 +271,10 @@ PINATA_API_SECRET=
 PINATA_GATEWAY=https://gateway.pinata.cloud/ipfs/
 
 IPFS_PUBLIC_GATEWAYS=https://gateway.pinata.cloud/ipfs/,https://ipfs.io/ipfs/,https://cloudflare-ipfs.com/ipfs/
+IPFS_API_URL=http://127.0.0.1:5001
 ```
 
-### Client Environment (`client/.env`)
-
+### 4. Client Environment (`client/.env`)
 Create `client/.env` based on `client/.env.example`:
 
 ```env
@@ -263,6 +284,7 @@ REACT_APP_DEFAULT_CHAIN_ID=31337
 REACT_APP_DEFAULT_CHAIN_NAME="Hardhat Localhost"
 REACT_APP_CONTRACT_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3
 ```
+
 
 ---
 
@@ -328,6 +350,8 @@ Tests deployment, registration, ownership, retrieval, access control, deactivati
 ```bash
 cd blockchain
 npx hardhat test
+
+npx hardhat node
 ```
 *Result: 20 passing tests.*
 
