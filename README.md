@@ -304,6 +304,10 @@ In a separate prompt (or another tab), deploy the `FileRegistry` contract to the
 ```bash
 cd blockchain
 npx hardhat run scripts/deploy.js --network localhost
+
+# running the terminal 
+$env:RECIPIENT_ADDRESS="0xd11f2b157E9d127fdeC69e53B4ED992D569c6424"
+npm run fund
 ```
 *The script deploys `FileRegistry` (typically to `0x5FbDB2315678afecb367f032d93F642f64180aa3`) and automatically updates the configuration files in `client/` and `server/`.*
 
